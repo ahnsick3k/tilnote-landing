@@ -101,7 +101,9 @@ export default function HeroSection() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        paddingTop: 200,
+        paddingBottom: 80,
         overflow: 'hidden',
         background: '#ffffff',
       }}
@@ -228,7 +230,7 @@ export default function HeroSection() {
             fontSize: 'clamp(15px, 1.8vw, 18px)',
             color: '#64748b',
             lineHeight: 1.7,
-            marginBottom: 48,
+            marginBottom: 40,
           }}
         >
           AI가 리서치부터 작성, 수정, 발행까지 함께하는 노트 에이전트, 틸노트
@@ -266,7 +268,7 @@ export default function HeroSection() {
             flexWrap: 'wrap',
             gap: 12,
             justifyContent: 'center',
-            marginTop: 48,
+            marginTop: 40,
           }}
         >
           <a
