@@ -4,41 +4,71 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
-/* ── 떨어지는 카드 데이터 ── */
-const fallingCards = [
-  { src: '/mockups/mockup1.png', label: 'Lazyweb', sub: 'calendly' },
-  { src: '/mockups/mockup2.png', label: 'Lazyweb', sub: 'userlane' },
-  { src: '/mockups/mockup3.png', label: 'Lazyweb', sub: 'livlastic' },
-  { src: '/mockups/mockup4.png', label: 'Lazyweb', sub: 'atlassian' },
-  { src: '/mockups/mockup5.png', label: 'Lazyweb', sub: 'suessme' },
-  { src: '/mockups/mockup6.png', label: 'Lazyweb', sub: 'raycast' },
+/*
+  애니메이션 단계:
+  0 = 대기
+  1 = 블록 3개 위에서 떨어져 쌓임
+  2 = 블록들 좌우로 벌어지며 흩어짐
+  3 = 블록 퇴장 + 텍스트 & 목업 페이드인
+*/
+
+/* 컬러 블록 정의 (blue=큰, green=중간, red=작은) */
+const blocks = [
+  { color: '#3B82F6', id: 'blue' },
+  { color: '#22C55E', id: 'green' },
+  { color: '#EF4444', id: 'red' },
 ];
 
-/* 카드별 최종 위치/회전 — 쌓이는 느낌 */
-const cardLayout = [
-  { x: -20, y: 0, rotate: -4 },
-  { x: 15, y: -10, rotate: 3 },
-  { x: -8, y: -20, rotate: -2 },
-  { x: 22, y: -30, rotate: 5 },
-  { x: -15, y: -40, rotate: -3 },
-  { x: 5, y: -50, rotate: 2 },
-];
+/* 각 단계별 블록 상태 */
+const blockStates: Record<string, {
+  stack: { y: number; x: number; w: string; h: string; rotate: number; opacity: number };
+  spread: { y: number; x: number; w: string; h: string; rotate: number; opacity: number };
+  exit: { y: number; x: number; w: string; h: string; rotate: number; opacity: number };
+}> = {
+  blue: {
+    stack: { y: 80, x: 0, w: '65%', h: '55%', rotate: -1, opacity: 1 },
+    spread: { y: 120, x: -320, w: '20%', h: '70%', rotate: -3, opacity: 1 },
+    exit: { y: 300, x: -500, w: '20%', h: '70%', rotate: -8, opacity: 0 },
+  },
+  green: {
+    stack: { y: 30, x: 10, w: '58%', h: '45%', rotate: 1.5, opacity: 1 },
+    spread: { y: 120, x: 320, w: '20%', h: '70%', rotate: 3, opacity: 1 },
+    exit: { y: 300, x: 500, w: '20%', h: '70%', rotate: 8, opacity: 0 },
+  },
+  red: {
+    stack: { y: -10, x: -5, w: '52%', h: '10%', rotate: -0.5, opacity: 1 },
+    spread: { y: 0, x: 0, w: '70%', h: '55%', rotate: 0, opacity: 1 },
+    exit: { y: 100, x: 0, w: '70%', h: '55%', rotate: 0, opacity: 0 },
+  },
+};
+
+function getBlockStyle(id: string, phase: number) {
+  const s = blockStates[id];
+  if (phase <= 0) {
+    return { y: -800, x: 0, width: s.stack.w, height: s.stack.h, rotate: s.stack.rotate * 3, opacity: 0 };
+  }
+  if (phase === 1) {
+    return { y: s.stack.y, x: s.stack.x, width: s.stack.w, height: s.stack.h, rotate: s.stack.rotate, opacity: s.stack.opacity };
+  }
+  if (phase === 2) {
+    return { y: s.spread.y, x: s.spread.x, width: s.spread.w, height: s.spread.h, rotate: s.spread.rotate, opacity: s.spread.opacity };
+  }
+  return { y: s.exit.y, x: s.exit.x, width: s.exit.w, height: s.exit.h, rotate: s.exit.rotate, opacity: s.exit.opacity };
+}
 
 export default function HeroSection() {
-  const [visibleCount, setVisibleCount] = useState(0);
+  const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    if (visibleCount >= fallingCards.length) {
-      /* 모든 카드가 떨어진 후 잠시 대기, 리셋 후 반복 */
-      const reset = setTimeout(() => setVisibleCount(0), 3000);
-      return () => clearTimeout(reset);
-    }
-    const timer = setTimeout(
-      () => setVisibleCount((c) => c + 1),
-      visibleCount === 0 ? 600 : 500,
-    );
-    return () => clearTimeout(timer);
-  }, [visibleCount]);
+    const timers = [
+      setTimeout(() => setPhase(1), 400),
+      setTimeout(() => setPhase(2), 1800),
+      setTimeout(() => setPhase(3), 2800),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  const showContent = phase >= 3;
 
   return (
     <section
@@ -50,176 +80,123 @@ export default function HeroSection() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '120px 24px 80px',
         overflow: 'hidden',
-        background:
-          'radial-gradient(ellipse 120% 80% at 50% -10%, rgba(95,101,240,0.07) 0%, transparent 60%), #ffffff',
+        background: '#ffffff',
       }}
     >
-      <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 1100 }}>
-        {/* Eyebrow */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '5px 14px',
-              borderRadius: 999,
-              border: '1px solid rgba(95,101,240,0.2)',
-              background: 'rgba(95,101,240,0.07)',
-              color: 'var(--accent)',
-              fontSize: 12,
-              fontWeight: 600,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase' as const,
-            }}
-          >
-            <span
+      {/* 떨어지는 컬러 블록들 */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          zIndex: phase < 3 ? 20 : 0,
+        }}
+      >
+        {blocks.map((block) => {
+          const s = getBlockStyle(block.id, phase);
+          return (
+            <motion.div
+              key={block.id}
+              initial={{ y: -800, x: 0, opacity: 0, rotate: 0 }}
+              animate={{
+                y: s.y,
+                x: s.x,
+                opacity: s.opacity,
+                rotate: s.rotate,
+              }}
+              transition={
+                phase === 1
+                  ? { type: 'spring', stiffness: 180, damping: 18, mass: 1.4 }
+                  : phase === 2
+                    ? { type: 'spring', stiffness: 120, damping: 20, mass: 1 }
+                    : { duration: 0.6, ease: 'easeIn' }
+              }
               style={{
-                width: 6, height: 6, borderRadius: '50%',
-                background: 'var(--accent)',
-                boxShadow: '0 0 10px rgba(107,112,255,0.7)',
+                position: 'absolute',
+                width: s.width,
+                height: s.height,
+                background: block.color,
+                borderRadius: 16,
+                boxShadow: '0 12px 40px rgba(0,0,0,0.12)',
               }}
             />
-            AI 노트 에이전트
-          </span>
-        </div>
+          );
+        })}
+      </div>
 
+      {/* 메인 콘텐츠 — 블록이 사라진 후 페이드인 */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={showContent ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          width: '100%',
+          maxWidth: 1100,
+          padding: '0 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         {/* 타이틀 */}
         <h1
           style={{
             textAlign: 'center',
-            fontSize: 'clamp(36px, 6.5vw, 64px)',
+            fontSize: 'clamp(40px, 7vw, 72px)',
             fontWeight: 800,
-            lineHeight: 1.08,
-            letterSpacing: '-0.02em',
-            color: 'var(--foreground)',
-            marginBottom: 16,
+            lineHeight: 1.1,
+            letterSpacing: '-0.03em',
+            color: '#0f172a',
+            marginBottom: 20,
           }}
         >
           쏟아지는 정보,
           <br />
-          <span
-            style={{
-              background: 'linear-gradient(135deg, #5f65f0 0%, #3d41cc 60%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            내 지식
-          </span>
-          으로 만드세요
+          내 지식으로 만드세요
         </h1>
+
+        {/* 서브카피 */}
         <p
           style={{
             textAlign: 'center',
-            fontSize: 18,
-            color: 'var(--muted)',
+            fontSize: 'clamp(15px, 1.8vw, 18px)',
+            color: '#64748b',
             lineHeight: 1.7,
             marginBottom: 56,
           }}
         >
-          AI가 리서치부터 작성, 수정, 발행까지 함께하는
-          <br />
-          노트 에이전트, 틸노트
+          AI가 리서치부터 작성, 수정, 발행까지 함께하는 노트 에이전트, 틸노트
         </p>
 
-        {/* 떨어지는 카드 영역 */}
+        {/* 목업 이미지 영역 */}
         <div
           style={{
-            position: 'relative',
             width: '100%',
-            maxWidth: 740,
-            height: 480,
-            margin: '0 auto',
+            maxWidth: 920,
+            aspectRatio: '16 / 10',
+            borderRadius: 20,
+            overflow: 'hidden',
+            boxShadow:
+              '0 25px 60px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(15,23,42,0.06)',
+            position: 'relative',
+            background: '#f1f5f9',
           }}
         >
-          <AnimatePresence>
-            {fallingCards.slice(0, visibleCount).map((card, i) => {
-              const layout = cardLayout[i];
-              return (
-                <motion.div
-                  key={`${i}-${visibleCount > fallingCards.length ? 'reset' : 'play'}`}
-                  initial={{
-                    y: -600,
-                    x: layout.x,
-                    rotate: layout.rotate * 3,
-                    opacity: 0,
-                    scale: 0.85,
-                  }}
-                  animate={{
-                    y: layout.y,
-                    x: layout.x,
-                    rotate: layout.rotate,
-                    opacity: 1,
-                    scale: 1,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.9,
-                    transition: { duration: 0.3 },
-                  }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 260,
-                    damping: 22,
-                    mass: 1.2,
-                  }}
-                  style={{
-                    position: 'absolute',
-                    left: '50%',
-                    bottom: 0,
-                    marginLeft: -280,
-                    width: 560,
-                    zIndex: i + 1,
-                    transformOrigin: 'center bottom',
-                  }}
-                >
-                  {/* 카드 프레임 */}
-                  <div
-                    style={{
-                      borderRadius: 20,
-                      overflow: 'hidden',
-                      border: '10px solid #1a1a1a',
-                      boxShadow:
-                        '0 20px 50px rgba(0,0,0,0.18), 0 6px 16px rgba(0,0,0,0.08)',
-                      background: '#fff',
-                    }}
-                  >
-                    <div style={{ position: 'relative', aspectRatio: '16 / 10' }}>
-                      <Image
-                        src={card.src}
-                        alt={card.sub}
-                        fill
-                        sizes="560px"
-                        style={{ objectFit: 'cover' }}
-                        priority={i < 2}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 라벨 */}
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      marginTop: 10,
-                      fontSize: 13,
-                      color: 'var(--muted-2)',
-                      fontWeight: 500,
-                    }}
-                  >
-                    <span style={{ fontWeight: 600, color: 'var(--muted)' }}>
-                      {card.label}
-                    </span>
-                    {' · '}
-                    {card.sub}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+          <Image
+            src="/mockups/mockup1.png"
+            alt="틸노트 앱 스크린샷"
+            fill
+            sizes="(max-width: 768px) 100vw, 920px"
+            style={{ objectFit: 'cover' }}
+            priority
+          />
         </div>
 
         {/* CTA */}
@@ -229,7 +206,7 @@ export default function HeroSection() {
             flexWrap: 'wrap',
             gap: 12,
             justifyContent: 'center',
-            marginTop: 56,
+            marginTop: 48,
           }}
         >
           <a
@@ -268,7 +245,6 @@ export default function HeroSection() {
           </a>
         </div>
 
-        {/* Social proof */}
         <p
           style={{
             textAlign: 'center',
@@ -284,19 +260,7 @@ export default function HeroSection() {
           <span style={{ color: '#fbbf24' }}>★</span>
           4.8 · Chrome 1,000+ 리뷰 · 45,000개 노트 생성됨
         </p>
-      </div>
-
-      {/* 배경 도트 패턴 */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'radial-gradient(#e5e7eb 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-          opacity: 0.25,
-          pointerEvents: 'none',
-        }}
-      />
+      </motion.div>
     </section>
   );
 }
