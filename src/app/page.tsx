@@ -1,5 +1,5 @@
 import Nav from "@/components/Nav";
-import Hero from "@/components/Hero";
+import HeroSection from "@/components/HeroSection";
 import PainPoints from "@/components/PainPoints";
 import Features from "@/components/Features";
 import HowItWorks from "@/components/HowItWorks";
@@ -17,7 +17,7 @@ export default function Home() {
         본문으로 건너뛰기
       </a>
       <Nav />
-      <Hero />
+      <HeroSection />
       <PainPoints />
       <div className="section-divider" />
       <Features />
