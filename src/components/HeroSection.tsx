@@ -6,38 +6,70 @@ import Image from 'next/image';
 
 /* ── 떨어지는 정보 카드 ── */
 const cards = [
-  { color: '#3B82F6', label: 'AI 뉴스', w: 220, h: 160 },
-  { color: '#22C55E', label: '논문 요약', w: 200, h: 140 },
-  { color: '#EF4444', label: '트렌드 리포트', w: 240, h: 150 },
-  { color: '#8B5CF6', label: '뉴스레터', w: 190, h: 130 },
-  { color: '#F59E0B', label: 'RSS 피드', w: 210, h: 145 },
-  { color: '#EC4899', label: 'YouTube 강의', w: 230, h: 155 },
-  { color: '#06B6D4', label: '블로그 포스트', w: 200, h: 135 },
-  { color: '#10B981', label: 'PDF 문서', w: 180, h: 140 },
+  { color: '#3B82F6', label: 'AI 뉴스' },
+  { color: '#22C55E', label: '논문 요약' },
+  { color: '#EF4444', label: '트렌드 리포트' },
+  { color: '#8B5CF6', label: '뉴스레터' },
+  { color: '#F59E0B', label: 'RSS 피드' },
+  { color: '#EC4899', label: 'YouTube 강의' },
+  { color: '#06B6D4', label: '블로그 포스트' },
+  { color: '#10B981', label: 'PDF 문서' },
+  { color: '#6366F1', label: 'Slack 메시지' },
+  { color: '#14B8A6', label: '팟캐스트 노트' },
+  { color: '#F97316', label: 'X 스레드' },
+  { color: '#A855F7', label: '리서치 메모' },
+  { color: '#0EA5E9', label: '위키 문서' },
+  { color: '#E11D48', label: '북마크' },
+  { color: '#84CC16', label: '회의록' },
+  { color: '#D946EF', label: 'Notion 페이지' },
 ];
 
-/* 각 카드 최종 착지 위치 (중앙 기준 px offset) */
+/* 카드 크기 랜덤 느낌 (큰 카드 위주) */
+const cardSizes = [
+  { w: 300, h: 200 }, { w: 280, h: 190 }, { w: 320, h: 210 }, { w: 270, h: 185 },
+  { w: 290, h: 195 }, { w: 310, h: 205 }, { w: 260, h: 180 }, { w: 300, h: 200 },
+  { w: 280, h: 190 }, { w: 290, h: 195 }, { w: 310, h: 205 }, { w: 270, h: 185 },
+  { w: 300, h: 200 }, { w: 280, h: 190 }, { w: 260, h: 180 }, { w: 310, h: 205 },
+];
+
+/* 화면을 덮도록 넓게 분포된 착지 위치 */
 const landPositions = [
-  { x: -180, y: -40, rotate: -6 },
-  { x: 160, y: -20, rotate: 5 },
-  { x: -60, y: 20, rotate: -2 },
-  { x: 200, y: 50, rotate: 4 },
-  { x: -200, y: 70, rotate: -5 },
-  { x: 80, y: -60, rotate: 3 },
-  { x: -140, y: 90, rotate: -4 },
-  { x: 120, y: 100, rotate: 6 },
+  { x: -380, y: -200, rotate: -7 },
+  { x: 320, y: -180, rotate: 5 },
+  { x: -120, y: -100, rotate: -3 },
+  { x: 400, y: -50, rotate: 6 },
+  { x: -350, y: 30, rotate: -5 },
+  { x: 150, y: -150, rotate: 4 },
+  { x: -200, y: 120, rotate: -4 },
+  { x: 280, y: 100, rotate: 7 },
+  { x: -450, y: -80, rotate: -6 },
+  { x: 450, y: 60, rotate: 5 },
+  { x: 0, y: 50, rotate: -2 },
+  { x: -280, y: 180, rotate: -5 },
+  { x: 350, y: 200, rotate: 4 },
+  { x: -50, y: -220, rotate: 3 },
+  { x: 200, y: -250, rotate: -3 },
+  { x: -400, y: 220, rotate: 6 },
 ];
 
-/* 흩어질 때 방향 */
+/* 흩어질 때 방향 — 더 멀리 */
 const scatterDirections = [
-  { x: -600, y: -200, rotate: -25 },
-  { x: 600, y: -150, rotate: 30 },
-  { x: -500, y: 200, rotate: -20 },
-  { x: 700, y: 100, rotate: 25 },
-  { x: -700, y: 0, rotate: -30 },
-  { x: 500, y: -250, rotate: 20 },
-  { x: -400, y: 300, rotate: -15 },
-  { x: 600, y: 250, rotate: 35 },
+  { x: -900, y: -400, rotate: -30 },
+  { x: 900, y: -350, rotate: 35 },
+  { x: -700, y: 300, rotate: -25 },
+  { x: 800, y: 200, rotate: 30 },
+  { x: -1000, y: 0, rotate: -35 },
+  { x: 700, y: -500, rotate: 25 },
+  { x: -600, y: 500, rotate: -20 },
+  { x: 1000, y: 400, rotate: 40 },
+  { x: -800, y: -300, rotate: -30 },
+  { x: 900, y: 300, rotate: 35 },
+  { x: -500, y: -500, rotate: -25 },
+  { x: 600, y: 500, rotate: 30 },
+  { x: -1000, y: 200, rotate: -35 },
+  { x: 800, y: -400, rotate: 25 },
+  { x: -700, y: 400, rotate: -20 },
+  { x: 1000, y: -200, rotate: 40 },
 ];
 
 export default function HeroSection() {
@@ -46,8 +78,8 @@ export default function HeroSection() {
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 300);
-    const t2 = setTimeout(() => setPhase(2), 2200);
-    const t3 = setTimeout(() => setPhase(3), 2800);
+    const t2 = setTimeout(() => setPhase(2), 2600);
+    const t3 = setTimeout(() => setPhase(3), 3300);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
@@ -110,8 +142,8 @@ export default function HeroSection() {
               }
               style={{
                 position: 'absolute',
-                width: card.w,
-                height: card.h,
+                width: cardSizes[i].w,
+                height: cardSizes[i].h,
                 borderRadius: 16,
                 background: card.color,
                 boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
