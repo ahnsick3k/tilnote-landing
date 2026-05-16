@@ -39,57 +39,83 @@ export default function HeroSection() {
       }}
     >
       <div className="relative z-10 w-full" style={{ maxWidth: 1100 }}>
-        {/* 상단 카테고리 */}
+        {/* Eyebrow */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 12,
+            gap: 6,
             marginBottom: 24,
           }}
         >
           <span
             style={{
-              padding: '6px 16px',
-              background: '#fff',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '5px 14px',
               borderRadius: 999,
-              fontSize: 13,
+              border: '1px solid rgba(95,101,240,0.2)',
+              background: 'rgba(95,101,240,0.07)',
+              color: 'var(--accent)',
+              fontSize: 12,
               fontWeight: 600,
-              border: '1px solid rgba(15,23,42,0.08)',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
             }}
           >
-            Tech
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                boxShadow: '0 0 10px rgba(107,112,255,0.7)',
+              }}
+            />
+            AI 노트 에이전트
           </span>
-          <span style={{ fontSize: 13, color: '#a1a1aa' }}>Lazyweb</span>
         </div>
 
         {/* 메인 타이틀 */}
         <h1
           style={{
             textAlign: 'center',
-            fontSize: 'clamp(36px, 5.5vw, 60px)',
+            fontSize: 'clamp(36px, 6.5vw, 64px)',
             fontWeight: 800,
-            lineHeight: 1.15,
-            letterSpacing: '-0.025em',
-            color: '#18181b',
+            lineHeight: 1.08,
+            letterSpacing: '-0.02em',
+            color: 'var(--foreground)',
             marginBottom: 16,
           }}
         >
-          바보 같은 내 AI를
+          쏟아지는 정보,
           <br />
-          웹디자이너로 만드는 법
+          <span
+            style={{
+              background: 'linear-gradient(135deg, #5f65f0 0%, #3d41cc 60%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            내 지식
+          </span>
+          으로 만드세요
         </h1>
         <p
           style={{
             textAlign: 'center',
-            fontSize: 'clamp(16px, 2vw, 20px)',
-            color: '#52525b',
+            fontSize: 18,
+            color: 'var(--muted)',
+            lineHeight: 1.7,
             marginBottom: 48,
           }}
         >
-          25만 개의 사이트, 한 번에 교육 진행시켜
+          AI가 리서치부터 작성, 수정, 발행까지 함께하는
+          <br />
+          노트 에이전트, 틸노트
         </p>
 
         {/* 목업 캐러셀 */}
