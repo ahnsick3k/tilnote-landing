@@ -24,16 +24,22 @@ const cards = [
   { color: '#D946EF', label: 'Notion 페이지' },
 ];
 
-/* 카드 크기 랜덤 느낌 (큰 카드 위주) */
-const cardSizes = [
+/* 카드 크기 — 데스크톱 / 모바일 */
+const cardSizesDesktop = [
   { w: 300, h: 200 }, { w: 280, h: 190 }, { w: 320, h: 210 }, { w: 270, h: 185 },
   { w: 290, h: 195 }, { w: 310, h: 205 }, { w: 260, h: 180 }, { w: 300, h: 200 },
   { w: 280, h: 190 }, { w: 290, h: 195 }, { w: 310, h: 205 }, { w: 270, h: 185 },
   { w: 300, h: 200 }, { w: 280, h: 190 }, { w: 260, h: 180 }, { w: 310, h: 205 },
 ];
+const cardSizesMobile = [
+  { w: 180, h: 130 }, { w: 170, h: 125 }, { w: 190, h: 135 }, { w: 165, h: 120 },
+  { w: 175, h: 128 }, { w: 185, h: 132 }, { w: 160, h: 118 }, { w: 180, h: 130 },
+  { w: 170, h: 125 }, { w: 175, h: 128 }, { w: 185, h: 132 }, { w: 165, h: 120 },
+  { w: 180, h: 130 }, { w: 170, h: 125 }, { w: 160, h: 118 }, { w: 185, h: 132 },
+];
 
-/* 화면을 덮도록 넓게 분포된 착지 위치 */
-const landPositions = [
+/* 착지 위치 — 데스크톱: 가로 넓게 / 모바일: 세로 길게 */
+const landPositionsDesktop = [
   { x: -380, y: -200, rotate: -7 },
   { x: 320, y: -180, rotate: 5 },
   { x: -120, y: -100, rotate: -3 },
@@ -51,9 +57,27 @@ const landPositions = [
   { x: 200, y: -250, rotate: -3 },
   { x: -400, y: 220, rotate: 6 },
 ];
+const landPositionsMobile = [
+  { x: -80, y: -280, rotate: -5 },
+  { x: 70, y: -230, rotate: 4 },
+  { x: -50, y: -160, rotate: -3 },
+  { x: 90, y: -100, rotate: 5 },
+  { x: -100, y: -40, rotate: -4 },
+  { x: 60, y: 20, rotate: 3 },
+  { x: -70, y: 80, rotate: -5 },
+  { x: 80, y: 140, rotate: 6 },
+  { x: -90, y: 200, rotate: -4 },
+  { x: 50, y: 260, rotate: 3 },
+  { x: -60, y: 320, rotate: -3 },
+  { x: 100, y: -320, rotate: 5 },
+  { x: -40, y: 380, rotate: -2 },
+  { x: 30, y: -380, rotate: 4 },
+  { x: -110, y: 340, rotate: -6 },
+  { x: 70, y: -60, rotate: 3 },
+];
 
-/* 흩어질 때 방향 — 더 멀리 */
-const scatterDirections = [
+/* 흩어질 때 방향 — 데스크톱 / 모바일 */
+const scatterDesktop = [
   { x: -900, y: -400, rotate: -30 },
   { x: 900, y: -350, rotate: 35 },
   { x: -700, y: 300, rotate: -25 },
@@ -71,10 +95,36 @@ const scatterDirections = [
   { x: -700, y: 400, rotate: -20 },
   { x: 1000, y: -200, rotate: 40 },
 ];
+const scatterMobile = [
+  { x: -400, y: -600, rotate: -25 },
+  { x: 400, y: -550, rotate: 30 },
+  { x: -350, y: 500, rotate: -20 },
+  { x: 350, y: 400, rotate: 25 },
+  { x: -300, y: -700, rotate: -30 },
+  { x: 300, y: -450, rotate: 20 },
+  { x: -250, y: 600, rotate: -15 },
+  { x: 250, y: 700, rotate: 35 },
+  { x: -400, y: -500, rotate: -25 },
+  { x: 400, y: 500, rotate: 30 },
+  { x: -200, y: -650, rotate: -20 },
+  { x: 200, y: 650, rotate: 25 },
+  { x: -350, y: 550, rotate: -30 },
+  { x: 350, y: -600, rotate: 20 },
+  { x: -300, y: 500, rotate: -15 },
+  { x: 300, y: -500, rotate: 35 },
+];
 
 export default function HeroSection() {
   /* phase: 0=wait, 1=drop, 2=scatter, 3=reveal */
   const [phase, setPhase] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 300);
@@ -82,6 +132,10 @@ export default function HeroSection() {
     const t3 = setTimeout(() => setPhase(3), 3300);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
+
+  const landPositions = isMobile ? landPositionsMobile : landPositionsDesktop;
+  const scatterDirections = isMobile ? scatterMobile : scatterDesktop;
+  const cardSizes = isMobile ? cardSizesMobile : cardSizesDesktop;
 
   const getCardAnim = useCallback((i: number) => {
     const land = landPositions[i];
@@ -102,8 +156,8 @@ export default function HeroSection() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        paddingTop: 200,
-        paddingBottom: 80,
+        paddingTop: isMobile ? 140 : 200,
+        paddingBottom: isMobile ? 48 : 80,
         overflow: 'hidden',
         background: '#ffffff',
       }}
