@@ -236,31 +236,6 @@ export default function HeroSection() {
           AI가 리서치부터 작성, 수정, 발행까지 함께하는 노트 에이전트, 틸노트
         </p>
 
-        {/* 목업 */}
-        <div
-          style={{
-            width: '100%',
-            maxWidth: 920,
-            aspectRatio: '16 / 10',
-            borderRadius: 20,
-            overflow: 'hidden',
-            boxShadow:
-              '0 25px 60px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.05)',
-            border: '1px solid rgba(15,23,42,0.06)',
-            position: 'relative',
-            background: '#f1f5f9',
-          }}
-        >
-          <Image
-            src="/mockups/mockup1.png"
-            alt="틸노트 앱 스크린샷"
-            fill
-            sizes="(max-width: 768px) 100vw, 920px"
-            style={{ objectFit: 'cover' }}
-            priority
-          />
-        </div>
-
         {/* CTA */}
         <div
           style={{
@@ -268,7 +243,7 @@ export default function HeroSection() {
             flexWrap: 'wrap',
             gap: 12,
             justifyContent: 'center',
-            marginTop: 40,
+            marginBottom: 16,
           }}
         >
           <a
@@ -312,7 +287,7 @@ export default function HeroSection() {
             textAlign: 'center',
             fontSize: 13,
             color: 'var(--muted)',
-            marginTop: 20,
+            marginBottom: 48,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -322,6 +297,31 @@ export default function HeroSection() {
           <span style={{ color: '#fbbf24' }}>★</span>
           4.8 · Chrome 1,000+ 리뷰 · 45,000개 노트 생성됨
         </p>
+
+        {/* 목업 */}
+        <div
+          style={{
+            width: '100%',
+            maxWidth: 920,
+            aspectRatio: '16 / 10',
+            borderRadius: 20,
+            overflow: 'hidden',
+            boxShadow:
+              '0 25px 60px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.05)',
+            border: '1px solid rgba(15,23,42,0.06)',
+            position: 'relative',
+            background: '#f1f5f9',
+          }}
+        >
+          <Image
+            src="/mockups/mockup1.png"
+            alt="틸노트 앱 스크린샷"
+            fill
+            sizes="(max-width: 768px) 100vw, 920px"
+            style={{ objectFit: 'cover' }}
+            priority
+          />
+        </div>
       </motion.div>
     </section>
   );
